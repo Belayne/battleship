@@ -6,7 +6,7 @@ import { drawGrid, drawFleet, drawAttacks } from './draw'
 function Game(){
     const firstPlayerGrid = document.querySelector('#firstPlayerGrid');
     const secondPlayerGrid = document.querySelector("#secondPlayerGrid")
-    const playerOne = new Player("Naol");
+    const playerOne = new Player("Player");
     const playerTwo = new ComputerPlayer();
     let currentPlayer = playerOne;
     let activePlayer = playerOne;
@@ -22,7 +22,6 @@ function Game(){
     const renderEnemyBoard = () => {
         secondPlayerGrid.querySelector("h2").textContent = inactivePlayer.name;
         drawGrid(500, secondPlayerGrid);
-        //drawFleet(inactivePlayer.board.fleet, secondPlayerGrid)
         drawAttacks(inactivePlayer.board.attacks, secondPlayerGrid);
         
     }
@@ -44,16 +43,46 @@ function Game(){
         })
     }
 
+    const checkWin = () => {
+        const win = playerOne.board.isFleetSunk() || playerTwo.board.isFleetSunk();
+        return win;
+    }
+
+    const gameOver = (winnerName) => {
+        const winOverlay = document.createElement("div");
+        winOverlay.id = "winOverlay";
+        
+        const winnerMessage = document.createElement("h2");
+        winnerMessage.textContent = winnerName + " wins!"
+        winOverlay.appendChild(winnerMessage);
+        document.querySelector("#container").append(winOverlay)
+    }
+
     const playRound = (attack) => {
+        currentPlayer = playerOne;
 
         inactivePlayer.board.receiveAttack(attack);
         render();
+
+        if(checkWin()) {
+            gameOver(currentPlayer.name);
+            return;
+        }
+
+        currentPlayer = playerTwo;
 
         const computerAttack = playerTwo.randomAttack();
         playerOne.board.receiveAttack(computerAttack);
         render();
 
+        if(checkWin()) {
+            gameOver(currentPlayer.name);
+            return;
+        }
+
     }
+
+    
     
 
     return {
