@@ -2,68 +2,75 @@ const Ship = require("../ship/ship").Ship
 
 class Gameboard {
     constructor() {
-        this.fleet = [];
-        this.missed = [];
+        this.fleet = [];    
+        this.attacks = []; 
     }
 
-    placeShip(start, end) {
-        const length = end.x - start.x || end.y - start.y;
-
-        this.#checkLength(length);
-        this.#checkCoordinates(start, end);
+    placeShip(length, coordinates, vertical = false) {
         
+        this.#validateLength(length);
+        this.#validateCoordinates(coordinates);
+
         const ship = new Ship(length);
+        const shipCoordinates = [];
 
-        let coordinates = [];
-        
         for(let i = 0; i < length; i++) {
-            if(start.x === end.x) {
-                coordinates.push([start.x, start.y + i])
-            }
-            else {
-                coordinates.push([start.x + i, start.y])
-            }
+            let nextCoord = vertical? [coordinates[0] + i, coordinates[1]]: [coordinates[0], coordinates[1] + i];
+            this.#validateCoordinates(nextCoord);   //checks if ship goes outside of the board lenghtwise
+            shipCoordinates.push(nextCoord);
         }
 
-        this.#checkAdjacency(coordinates);
-
-        this.fleet.push({
-            ship,
-            coordinates
-        });
+        this.fleet.push({ship, shipCoordinates});
     }
 
-    #checkAdjacency(coordinates) {
-      coordinates.forEach(el => {
-        this.fleet.forEach(ship => {
-            ship.coordinates.forEach(coord => {
-                if(Math.abs(coord[0] - el[0]) < 2 && Math.abs(coord[1] - el[1]) < 2) {
-                    throw new Error("Invalid placement");
+    receiveAttack(coordinates) {
+        const [x, y] = coordinates;
+        let hit = false;
+
+        for(const shipObj of this.fleet) {
+            for(const [shipX, shipY] of shipObj.shipCoordinates) {
+                if(shipX === x && shipY === y) {
+                    hit = true;
+                    shipObj.ship.hit();
+
+                    this.attacks.push({coordinates, hit})
+                    
+                    return hit;
                 }
-            })
-        })
-      })
+            }
+        }
+
+        this.attacks.push({coordinates, hit})
+        return hit;
     }
 
-    #checkLength(length) {
+    isFleetSunk() {
+        const sunk = this.fleet.every(shipObj => shipObj.ship.isSunk())
+        return sunk;
+    }
+
+    #validateLength(length) {
         if(length > 4 || length < 2) {
-            throw new Error(`Invalid ship length`)
+            throw new Error("Invalid ship length");
         }
     }
-    
-    #checkCoordinates(start, end) {
-        if( start.x > 10 || start.x < 1 ||
-            start.y > 10 || start.y < 1 ||
-            end.x > 10 || end.x < 1 ||
-            end.y > 10 || end.y < 1) {
-                throw new Error("Invalid coordinates");
-            }
-    
-            if(start.x != end.x && start.y != end.y) {
-                throw new Error("Invalid coordinates");
-            }
+
+    #validateCoordinates(coordinates) {
+        const [x, y] = coordinates;
+
+        if(x < 0 || x > 10 || y < 0 || y > 10) {
+            throw new Error("Invalid coordinates (out of range)");
         }
-    
+
+        this.fleet.forEach(shipObj => {
+            for(const [shipX, shipY] of shipObj.shipCoordinates){
+                if(shipX === x && shipY === y){
+                    throw new Error("Invalid coordinates (ship already present)");
+                }
+            }
+        })
+    }
+  
 }
 
 module.exports = {
