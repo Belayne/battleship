@@ -15,7 +15,7 @@ class Gameboard {
         const shipCoordinates = [];
 
         for(let i = 0; i < length; i++) {
-            let nextCoord = vertical? [coordinates[0] + i, coordinates[1]]: [coordinates[0], coordinates[1] + i];
+            let nextCoord = vertical? [coordinates[0], coordinates[1] + i]: [coordinates[0] + i, coordinates[1]];
             this.#validateCoordinates(nextCoord);   //checks if ship goes outside of the board lenghtwise
             shipCoordinates.push(nextCoord);
         }
@@ -33,14 +33,14 @@ class Gameboard {
                     hit = true;
                     shipObj.ship.hit();
 
-                    this.attacks.push({coordinates, hit})
+                    this.attacks.push([coordinates, hit])
                     
                     return hit;
                 }
             }
         }
 
-        this.attacks.push({coordinates, hit})
+        this.attacks.push([coordinates, hit])
         return hit;
     }
 
@@ -50,7 +50,7 @@ class Gameboard {
     }
 
     #validateLength(length) {
-        if(length > 4 || length < 2) {
+        if(length > 5 || length < 2) {
             throw new Error("Invalid ship length");
         }
     }
@@ -58,7 +58,7 @@ class Gameboard {
     #validateCoordinates(coordinates) {
         const [x, y] = coordinates;
 
-        if(x < 0 || x > 10 || y < 0 || y > 10) {
+        if(x < 0 || x > 9 || y < 0 || y > 9) {
             throw new Error("Invalid coordinates (out of range)");
         }
 
