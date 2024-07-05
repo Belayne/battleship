@@ -1,12 +1,12 @@
 
 function drawSquare(x, y, containerSize) {
     const square = document.createElementNS("http://www.w3.org/2000/svg",'rect');
-    const size = containerSize/10;
+    const size = containerSize/11;
     square.setAttribute("width", size);
     square.setAttribute("height", size);
 
-    square.setAttribute("data-x", `${x}`);
-    square.setAttribute("data-y", `${y}`);
+    square.setAttribute("data-x", `${x - 1}`);
+    square.setAttribute("data-y", `${y - 1}`);
     square.setAttribute("x", x * size);
     square.setAttribute("y", y * size);
 
@@ -32,13 +32,52 @@ function drawGrid(size, parent) {
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     //svg.setAttribute("viewBox", "0 0 500 500")
 
-    for(let i = 0; i < 10; i++) {
-        for(let j = 0; j < 10; j++) {
-            const square = drawSquare(i, j, size);
-            container.appendChild(square);
+    for(let i = 0; i < 11; i++) {
+        for(let j = 0; j < 11; j++) {
+            if(i === 0 && j === 0) continue;
+            
+            if(i === 0) {
+                const svgText = drawLetter(j, size)
+                container.appendChild(svgText);
+            }
+
+            if(j === 0) {
+                const svgText = drawNumber(i, size)
+                container.appendChild(svgText);
+            }
+
+            if(i != 0 && j != 0) {
+                const square = drawSquare(i, j, size);
+                container.appendChild(square);
+            }
         }
     }
     parent.append(svg)
+}
+
+function drawLetter(x, parentSize) {
+    const svgText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    const textLength = parentSize/11;
+
+    svgText.setAttribute("x", x * textLength + 12)
+    svgText.setAttribute("y", textLength / 2)
+    svgText.textContent = String.fromCharCode(64 + x);
+
+    return svgText;
+
+}
+
+
+function drawNumber(y, parentSize) {
+    const svgText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    const textLength = parentSize/11;
+
+    svgText.setAttribute("y", y * textLength + 27)
+    svgText.setAttribute("x", textLength / 2)
+    svgText.textContent = (y);
+
+    return svgText;
+
 }
 
 function drawFleet(fleet, grid) {
@@ -59,6 +98,7 @@ function drawAttacks(attacks, grid) {
         } else {
             square.setAttribute("fill", "blue");
         }
+        square.classList.add("attacked")
     }
 }
 

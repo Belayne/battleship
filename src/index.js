@@ -31,16 +31,21 @@ function Game(){
         renderEnemyBoard();
     }
 
+    const getUserClick = (e) => {
+        if(e.target.tagName == "rect") {
+            if(!e.target.classList.contains("attacked")) {
+                playRound([+e.target.getAttribute("data-x"), +e.target.getAttribute("data-y")]);
+                //e.target.classList.add("clicked");
+            }
+        }
+    }
+
     const start = () => {
         playerOne.randomizeShips();
         playerTwo.randomizeShips();
         render();
 
-        secondPlayerGrid.addEventListener("click", e => {
-            if(e.target.tagName == "rect") {
-                playRound([+e.target.getAttribute("data-x"), +e.target.getAttribute("data-y")]);
-            }
-        })
+        secondPlayerGrid.addEventListener("click", getUserClick)
     }
 
     const checkWin = () => {
@@ -51,7 +56,7 @@ function Game(){
     const gameOver = (winnerName) => {
         const winOverlay = document.createElement("div");
         winOverlay.id = "winOverlay";
-        
+
         const winnerMessage = document.createElement("h2");
         winnerMessage.textContent = winnerName + " wins!"
         winOverlay.appendChild(winnerMessage);
