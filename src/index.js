@@ -6,6 +6,8 @@ import { drawGrid, drawFleet, drawAttacks } from './draw'
 function Game(){
     const firstPlayerGrid = document.querySelector('#firstPlayerGrid');
     const secondPlayerGrid = document.querySelector("#secondPlayerGrid")
+    const randomizeBtn = document.querySelector("#randomizeBtn");
+    const startBtn = document.querySelector("#startBtn");
     const playerOne = new Player("Player");
     const playerTwo = new ComputerPlayer();
     let currentPlayer = playerOne;
@@ -21,7 +23,7 @@ function Game(){
 
     const renderEnemyBoard = () => {
         secondPlayerGrid.querySelector("h2").textContent = inactivePlayer.name;
-        drawGrid(500, secondPlayerGrid);
+        drawGrid(500, secondPlayerGrid, true);
         drawAttacks(inactivePlayer.board.attacks, secondPlayerGrid);
         
     }
@@ -41,11 +43,18 @@ function Game(){
     }
 
     const start = () => {
-        playerOne.randomizeShips();
-        playerTwo.randomizeShips();
         render();
+        secondPlayerGrid.addEventListener("click", getUserClick);
+        randomizeBtn.removeEventListener("click", handleRandomBtn);
+        randomizeBtn.classList.add("disabled");
+        startBtn.removeEventListener("click", start);
+        startBtn.classList.add("disabled");
+    }
 
-        secondPlayerGrid.addEventListener("click", getUserClick)
+    const reset = () => {
+        playerOne.reset()
+        playerTwo.reset();
+        init();
     }
 
     const checkWin = () => {
@@ -87,16 +96,27 @@ function Game(){
 
     }
 
-    
-    
+    const handleRandomBtn = () => {
+        playerOne.randomizeShips();
+        render();
+    }
+
+    const init = () => {
+        playerOne.randomizeShips();
+        playerTwo.randomizeShips();
+        randomizeBtn.addEventListener("click", handleRandomBtn);
+        startBtn.addEventListener("click", start);
+
+        render();
+    }
 
     return {
-        start
+        init
     }
 }
 
 const game = Game();
-game.start();
+game.init();
 
 
 

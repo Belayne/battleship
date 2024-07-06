@@ -4,7 +4,9 @@ function drawSquare(x, y, containerSize) {
     const size = containerSize/11;
     square.setAttribute("width", size);
     square.setAttribute("height", size);
-
+    square.setAttribute("ry", size / 11);
+    square.setAttribute("rx", size / 11);
+    
     square.setAttribute("data-x", `${x - 1}`);
     square.setAttribute("data-y", `${y - 1}`);
     square.setAttribute("x", x * size);
@@ -13,42 +15,34 @@ function drawSquare(x, y, containerSize) {
     return square;
 }
 
-function drawGrid(size, parent) {
+function drawGrid(size, parent, opponent = false) {
     if(parent.querySelector("svg")) {
         parent.querySelector("svg").remove();
     }
     const svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
 
-    const container = document.createElementNS("http://www.w3.org/2000/svg",'g');
-
-    container.setAttribute('fill', "white");
-    container.setAttribute('stroke', "black");
-    container.setAttribute('stroke-width', "1");
-
-    svg.appendChild(container);
-
     svg.setAttribute("width", size);
     svg.setAttribute("height", size);
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    //svg.setAttribute("viewBox", "0 0 500 500")
 
     for(let i = 0; i < 11; i++) {
         for(let j = 0; j < 11; j++) {
-            if(i === 0 && j === 0) continue;
-            
-            if(i === 0) {
+            if(i === 0 && j != 0) {
                 const svgText = drawLetter(j, size)
-                container.appendChild(svgText);
+                svg.appendChild(svgText);
             }
 
-            if(j === 0) {
+            if(j === 0 && i != 0) {
                 const svgText = drawNumber(i, size)
-                container.appendChild(svgText);
+                svg.appendChild(svgText);
             }
 
-            if(i != 0 && j != 0) {
+            if(i > 0 && j > 0) {
                 const square = drawSquare(i, j, size);
-                container.appendChild(square);
+                if(opponent) {
+                    square.classList.add("opponent");
+                }
+                svg.appendChild(square);
             }
         }
     }
@@ -59,7 +53,7 @@ function drawLetter(x, parentSize) {
     const svgText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     const textLength = parentSize/11;
 
-    svgText.setAttribute("x", x * textLength + 12)
+    svgText.setAttribute("x", x * textLength + textLength/2 - 4)
     svgText.setAttribute("y", textLength / 2)
     svgText.textContent = String.fromCharCode(64 + x);
 
@@ -72,7 +66,7 @@ function drawNumber(y, parentSize) {
     const svgText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     const textLength = parentSize/11;
 
-    svgText.setAttribute("y", y * textLength + 27)
+    svgText.setAttribute("y", y * textLength + textLength/2 + 7)
     svgText.setAttribute("x", textLength / 2)
     svgText.textContent = (y);
 
@@ -84,7 +78,7 @@ function drawFleet(fleet, grid) {
     fleet.forEach(shipObj => {
         for(const [x, y] of shipObj.shipCoordinates) {
             const square = grid.querySelector(`rect[data-x='${x}'][data-y='${y}']`)
-            square.setAttribute("fill", "green");
+            square.classList.add("ship");
             //square.setAttribute("stroke", "green");
         }
     })
@@ -94,9 +88,9 @@ function drawAttacks(attacks, grid) {
     for(const [[x, y], hit] of attacks) {
         const square = grid.querySelector(`rect[data-x='${x}'][data-y='${y}']`);
         if(hit) {
-            square.setAttribute("fill", "red");
+            square.classList.add("hit");
         } else {
-            square.setAttribute("fill", "blue");
+            square.classList.add("miss");
         }
         square.classList.add("attacked")
     }

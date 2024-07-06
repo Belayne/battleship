@@ -24,11 +24,16 @@ class Player{
         }
     }
 
+    reset() {
+        this.board.fleet = [];
+        this.board.attacks = [];
+    }
+
 }
 
 class ComputerPlayer extends Player {
     constructor() {
-        super("Computer");
+        super("Opponent");
         this.playedCoordinates = [];
     }
 
@@ -43,6 +48,11 @@ class ComputerPlayer extends Player {
 
         return [attack.x, attack.y];
 
+    }
+
+    reset() {
+        super.reset();
+        this.playedCoordinates = [];
     }
 }
 
