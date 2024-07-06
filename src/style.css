@@ -38,11 +38,19 @@ h2 {
 
 #winOverlay {
     position: absolute;
-    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    top: 40px;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(240, 248, 255, 0.37);
+}
+
+#winOverlay button {
+    width: 200px;
 }
 
 #secondPlayerGrid rect:not(.attacked):hover {

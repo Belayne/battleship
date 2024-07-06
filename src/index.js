@@ -37,7 +37,6 @@ function Game(){
         if(e.target.tagName == "rect") {
             if(!e.target.classList.contains("attacked")) {
                 playRound([+e.target.getAttribute("data-x"), +e.target.getAttribute("data-y")]);
-                //e.target.classList.add("clicked");
             }
         }
     }
@@ -52,8 +51,11 @@ function Game(){
     }
 
     const reset = () => {
-        playerOne.reset()
+        playerOne.reset();
         playerTwo.reset();
+        secondPlayerGrid.removeEventListener("click", getUserClick);
+        startBtn.classList.remove("disabled")
+        randomizeBtn.classList.remove("disabled")
         init();
     }
 
@@ -64,11 +66,20 @@ function Game(){
 
     const gameOver = (winnerName) => {
         const winOverlay = document.createElement("div");
+        const restartBtn = document.createElement("button");
+        restartBtn.textContent = "Reset";
+
+        restartBtn.addEventListener("click", () => {
+            reset();
+            winOverlay.remove();
+        })
+
         winOverlay.id = "winOverlay";
 
         const winnerMessage = document.createElement("h2");
         winnerMessage.textContent = winnerName + " wins!"
         winOverlay.appendChild(winnerMessage);
+        winOverlay.appendChild(restartBtn)
         document.querySelector("#container").append(winOverlay)
     }
 
@@ -101,7 +112,7 @@ function Game(){
         render();
     }
 
-    const init = () => {
+    function init(){
         playerOne.randomizeShips();
         playerTwo.randomizeShips();
         randomizeBtn.addEventListener("click", handleRandomBtn);
