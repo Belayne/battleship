@@ -112,7 +112,7 @@ function Game(){
         render();
     }
 
-    function init(){
+    async function init(){
         playerOne.randomizeShips();
         playerTwo.randomizeShips();
         randomizeBtn.addEventListener("click", handleRandomBtn);
@@ -126,8 +126,9 @@ function Game(){
     }
 }
 
+
 const game = Game();
-game.init();
+game.init().then(() => document.querySelector("#loading").remove());
 
 
 

@@ -67,7 +67,7 @@ text {
 }
 
 .ship {
-    fill: green;
+    fill: rgba(0, 128, 0, 0.671);
 }
 
 rect {
@@ -118,4 +118,35 @@ button:hover {
     display: flex;
     justify-content: space-evenly;
     gap: 30px;
+}
+
+#loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+
+#loading svg {
+    height: 50px;
+    width: 50px;
+    will-change: transform;
+    animation: spin 1s linear infinite;
+}
+
+#loading svg path:last-of-type {
+    fill: rgb(76, 141, 76);
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
