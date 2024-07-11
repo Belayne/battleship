@@ -1,4 +1,4 @@
-import('./style.css')
+
 import { Player, ComputerPlayer } from './player/player'
 import { drawGrid, drawFleet, drawAttacks } from './draw'
 
@@ -128,6 +128,7 @@ function Game(){
 
 
 const game = Game();
+//Wait for boards to be ready
 game.init().then(() => document.querySelector("#loading").remove());
 
 
